@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Upload File</title>
+</head>
+<body>
+<h3>Upload your document</h3>
+
+<form method="post" enctype="multipart/form-data"
+      th:action="@{/upload/{sessionId}(sessionId=${sessionId})}">
+    <input type="file" name="file" required />
+    <button type="submit">Upload</button>
+</form>
+
+</body>
+</html>
