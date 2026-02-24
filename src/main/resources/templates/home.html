@@ -24,8 +24,7 @@
 </head>
 <body>
 <h2>Scan to Upload</h2>
-
-<img th:src="'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://'+${#httpServletRequest.serverName}+'/upload/'+${sessionId}" />
+<img th:src="'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' + ${baseUrl} + '/upload/' + ${sessionId}" />
 
 <p>Session expires in 5 minutes.</p>
 

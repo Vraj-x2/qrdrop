@@ -33,10 +33,14 @@ public class SessionController {
     }
 
     @GetMapping("/")
-    public String home(Model model) {
+    public String home(Model model, jakarta.servlet.http.HttpServletRequest request) {
         String sessionId = UUID.randomUUID().toString();
         sessionExpiry.put(sessionId, Instant.now().plusSeconds(SESSION_TIMEOUT_SECONDS));
+
+        String baseUrl = request.getScheme() + "://" + request.getServerName();
+        model.addAttribute("baseUrl", baseUrl);
         model.addAttribute("sessionId", sessionId);
+
         return "home";
     }
 
