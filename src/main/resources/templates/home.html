@@ -9,7 +9,11 @@
             fetch("/check/" + sessionId)
                 .then(res => res.text())
                 .then(data => {
-                    if (data !== "WAIT") {
+                    if (data === "EXPIRED") {
+                        alert("Session expired");
+                        location.reload();
+                    }
+                    if (data !== "WAIT" && data !== "EXPIRED") {
                         window.location = "/download/" + data;
                     }
                 });
@@ -21,7 +25,9 @@
 <body>
 <h2>Scan to Upload</h2>
 
-<img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://vrajcloud.dev/upload/[[${sessionId}]]" />
+<img th:src="'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://'+${#httpServletRequest.serverName}+'/upload/'+${sessionId}" />
+
+<p>Session expires in 5 minutes.</p>
 
 </body>
 </html>

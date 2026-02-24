@@ -4,7 +4,7 @@
     <title>Upload File</title>
 </head>
 <body>
-<h3>Upload your document</h3>
+<h3>Upload your document (Max 10MB)</h3>
 
 <form method="post" enctype="multipart/form-data"
       th:action="@{/upload/{sessionId}(sessionId=${sessionId})}">
