@@ -16,6 +16,8 @@ import java.time.Instant;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 @Controller
 public class SessionController {
@@ -56,19 +58,14 @@ public class SessionController {
     public String upload(@PathVariable String sessionId,
                          @RequestParam("file") MultipartFile file) throws IOException {
 
-        if (!isSessionValid(sessionId)) return "Session expired";
+        Path sessionPath = Paths.get("uploads", sessionId);
 
-        if (file.getSize() > MAX_FILE_SIZE) {
-            return "File too large (Max 10MB)";
-        }
+        // Create session directory safely
+        Files.createDirectories(sessionPath);
 
-        File sessionFolder = new File(uploadDir + sessionId);
-        if (!sessionFolder.exists()) sessionFolder.mkdirs();
+        Path filePath = sessionPath.resolve(file.getOriginalFilename());
 
-        String safeFileName = file.getOriginalFilename().replaceAll("[^a-zA-Z0-9\\.\\-]", "_");
-
-        File uploaded = new File(sessionFolder, safeFileName);
-        file.transferTo(uploaded);
+        file.transferTo(filePath);
 
         return "Uploaded";
     }
