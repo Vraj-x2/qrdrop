@@ -1,32 +1,115 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>QR Drop</title>
-    <script>
-        let sessionId = "[[${sessionId}]]";
 
-        function checkFile() {
-            fetch("/check/" + sessionId)
-                .then(res => res.text())
-                .then(data => {
-                    if (data === "EXPIRED") {
-                        alert("Session expired");
-                        location.reload();
-                    }
-                    if (data !== "WAIT" && data !== "EXPIRED") {
-                        window.location = "/download/" + data;
-                    }
-                });
-        }
+<title>QR Drop</title>
 
-        setInterval(checkFile, 2000);
-    </script>
+<script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+
+body{
+font-family:Arial,Helvetica,sans-serif;
+background:#f4f6f8;
+margin:0;
+display:flex;
+justify-content:center;
+align-items:center;
+height:100vh;
+}
+
+.container{
+background:white;
+padding:40px;
+border-radius:12px;
+box-shadow:0 10px 30px rgba(0,0,0,0.1);
+text-align:center;
+max-width:400px;
+width:90%;
+}
+
+h1{
+margin-top:0;
+}
+
+#qrcode canvas{
+margin-top:20px;
+}
+
+.status{
+margin-top:15px;
+color:#666;
+font-size:14px;
+}
+
+</style>
+
 </head>
-<body>
-<h2>Scan to Upload</h2>
-<img th:src="'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' + ${baseUrl} + '/upload/' + ${sessionId}" />
 
-<p>Session expires in 5 minutes.</p>
+<body>
+
+<div class="container">
+
+<h1>QR Drop</h1>
+
+<div id="qrcode"></div>
+
+<p class="status">Scan this QR code with your phone to upload a file</p>
+
+</div>
+
+<audio id="ding" src="/ding.mp3"></audio>
+
+<script>
+
+const sessionId = "[[${sessionId}]]";
+const baseUrl = "[[${baseUrl}]]";
+
+const uploadUrl = baseUrl + "/upload/" + sessionId;
+
+QRCode.toCanvas(uploadUrl,{width:240},function(err,canvas){
+
+document.getElementById("qrcode").appendChild(canvas);
+
+});
+
+let downloaded=false;
+
+async function check(){
+
+try{
+
+const res = await fetch("/check/" + sessionId);
+const text = await res.text();
+
+if(text==="WAIT") return;
+
+if(text==="EXPIRED"){
+location.reload();
+return;
+}
+
+if(!downloaded){
+
+downloaded=true;
+
+document.getElementById("ding").play();
+
+window.location="/download/" + text;
+
+}
+
+}catch(e){
+console.log(e);
+}
+
+}
+
+setInterval(check,2000);
+
+</script>
 
 </body>
 </html>

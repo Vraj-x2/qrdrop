@@ -1,16 +1,131 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Upload File</title>
-</head>
-<body>
-<h3>Upload your document (Max 10MB)</h3>
 
-<form method="post" enctype="multipart/form-data"
-      th:action="@{/upload/{sessionId}(sessionId=${sessionId})}">
-    <input type="file" name="file" required />
-    <button type="submit">Upload</button>
-</form>
+<title>Upload File</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+
+body{
+font-family:Arial,Helvetica,sans-serif;
+background:#f4f6f8;
+margin:0;
+display:flex;
+justify-content:center;
+align-items:center;
+height:100vh;
+}
+
+.container{
+background:white;
+padding:35px;
+border-radius:12px;
+box-shadow:0 10px 30px rgba(0,0,0,0.1);
+text-align:center;
+max-width:420px;
+width:90%;
+}
+
+h2{
+margin-top:0;
+}
+
+button{
+
+width:100%;
+padding:18px;
+font-size:18px;
+margin-top:20px;
+border:none;
+border-radius:8px;
+background:#007bff;
+color:white;
+cursor:pointer;
+
+}
+
+button:hover{
+background:#0056b3;
+}
+
+.success{
+color:green;
+font-size:20px;
+margin-top:20px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<h2>Upload File</h2>
+
+<p>Select a file or take a photo</p>
+
+<input id="fileInput" type="file"
+accept="image/*,application/pdf"
+capture="environment"
+hidden>
+
+<button onclick="openUpload()">Upload / Take Photo</button>
+
+<div id="result"></div>
+
+</div>
+
+<script>
+
+const sessionId = "[[${sessionId}]]";
+
+window.onload = () => {
+
+setTimeout(()=>{
+document.getElementById("fileInput").click();
+},500);
+
+};
+
+function openUpload(){
+
+document.getElementById("fileInput").click();
+
+}
+
+document.getElementById("fileInput").addEventListener("change", async function(){
+
+const file = this.files[0];
+
+if(!file) return;
+
+const formData = new FormData();
+formData.append("file",file);
+
+const device = navigator.userAgent;
+
+await fetch("/upload/" + sessionId,{
+
+method:"POST",
+
+headers:{
+"device-name":device
+},
+
+body:formData
+
+});
+
+document.getElementById("result").innerHTML=
+"<div class='success'>✔ Upload complete<br>You can close this page</div>";
+
+});
+
+</script>
 
 </body>
 </html>
